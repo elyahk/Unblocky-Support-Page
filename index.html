@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unblocky – Earn Your Screen Time</title>
+  <meta name="description" content="Unblocky turns screen time into a fitness challenge. Do push-ups to unlock your apps. Available on iOS." />
+  <link rel="icon" type="image/png" href="images/appicon.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:       #1BE084;
+      --green-dark:  #13B868;
+      --orange:      #FF9426;
+      --bg:          #0A0A0F;
+      --bg2:         #111118;
+      --bg3:         #16161F;
+      --card:        #1A1A25;
+      --border:      rgba(255,255,255,0.08);
+      --text:        #F0F0F5;
+      --muted:       rgba(255,255,255,0.5);
+      --dim:         rgba(255,255,255,0.65);
+      --radius:      20px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .nav-logo img {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+    }
+    .nav-logo span {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links .btn-nav {
+      background: var(--green);
+      color: #000;
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .nav-links .btn-nav:hover { background: var(--green-dark); color: #000; }
+    @media (max-width: 640px) {
+      .nav-links { gap: 20px; }
+      .nav-links li:nth-child(2) { display: none; }
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--bg);
+      padding: 96px 24px 0;
+      text-align: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .hero-glow {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 500px;
+      background: radial-gradient(ellipse at center top, rgba(27,224,132,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner { max-width: 860px; margin: 0 auto; position: relative; z-index: 1; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(27,224,132,0.1);
+      color: var(--green);
+      border: 1px solid rgba(27,224,132,0.25);
+      border-radius: 50px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .hero h1 {
+      font-size: clamp(38px, 6.5vw, 72px);
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.05;
+      letter-spacing: -2px;
+      margin-bottom: 24px;
+    }
+    .hero h1 .accent { color: var(--green); }
+    .hero h1 .accent-orange { color: var(--orange); }
+    .hero p {
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--dim);
+      max-width: 520px;
+      margin: 0 auto 40px;
+      line-height: 1.65;
+    }
+    .hero-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 72px;
+    }
+    .btn-appstore {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--text);
+      color: var(--bg);
+      text-decoration: none;
+      padding: 14px 28px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+    .btn-appstore:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.5); opacity: 0.92; }
+    .btn-appstore svg { width: 22px; height: 22px; }
+    .btn-appstore .coming-soon-label {
+      font-size: 11px;
+      font-weight: 600;
+      opacity: 0.6;
+      letter-spacing: 0.5px;
+      display: block;
+      text-align: left;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+    .btn-appstore .main-label {
+      font-size: 15px;
+      font-weight: 700;
+      display: block;
+      text-align: left;
+      line-height: 1;
+    }
+    .btn-support-link {
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 500;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      padding-bottom: 2px;
+      transition: color 0.2s;
+    }
+    .btn-support-link:hover { color: var(--text); }
+
+    .hero-phone-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 20px;
+    }
+    .hero-phone {
+      position: relative;
+      filter: drop-shadow(0 32px 48px rgba(0,0,0,0.7));
+    }
+    .hero-phone img {
+      display: block;
+      height: 420px;
+      width: auto;
+      border-radius: 36px;
+      border: 1.5px solid rgba(255,255,255,0.1);
+    }
+    .hero-phone:nth-child(1) { transform: rotate(-5deg) translateY(28px); opacity: 0.78; }
+    .hero-phone:nth-child(2) { z-index: 2; }
+    .hero-phone:nth-child(2) img { height: 470px; }
+    .hero-phone:nth-child(3) { transform: rotate(5deg) translateY(28px); opacity: 0.78; }
+    @media (max-width: 640px) {
+      .hero-phone:nth-child(1),
+      .hero-phone:nth-child(3) { display: none; }
+      .hero-phone:nth-child(2) img { height: 400px; }
+    }
+
+    /* ── SECTION BASE ── */
+    section { padding: 96px 24px; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+    .section-sub {
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 560px;
+      margin-bottom: 56px;
+      line-height: 1.65;
+    }
+
+    /* ── FEATURES ── */
+    .features { background: var(--bg2); }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(27,224,132,0.25);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin-bottom: 18px;
+    }
+    .icon-green  { background: rgba(27,224,132,0.12); }
+    .icon-orange { background: rgba(255,148,38,0.12); }
+    .icon-blue   { background: rgba(96,165,250,0.12); }
+    .icon-purple { background: rgba(167,139,250,0.12); }
+    .feature-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .feature-card p { color: var(--muted); font-size: 14px; line-height: 1.65; }
+
+    /* ── HOW IT WORKS ── */
+    .how-it-works { background: var(--bg); }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 32px;
+      text-align: center;
+    }
+    .step-number {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, var(--green-dark), var(--green));
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 900;
+      color: #000;
+      margin: 0 auto 16px;
+    }
+    .step h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+    .step p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+    .steps-connector {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      align-items: start;
+      position: relative;
+    }
+    .steps-connector::before {
+      content: '';
+      position: absolute;
+      top: 26px;
+      left: calc(12.5% + 26px);
+      right: calc(12.5% + 26px);
+      height: 2px;
+      background: linear-gradient(90deg, var(--green), var(--orange));
+      opacity: 0.2;
+    }
+
+    /* ── SHOWCASE ── */
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 72px;
+      align-items: center;
+    }
+    .showcase-grid.reverse { direction: rtl; }
+    .showcase-grid.reverse > * { direction: ltr; }
+    .showcase-image { display: flex; justify-content: center; }
+    .showcase-pills { display: flex; flex-wrap: wrap; gap: 10px; }
+    .pill {
+      background: rgba(27,224,132,0.1);
+      color: var(--green);
+      border: 1px solid rgba(27,224,132,0.2);
+      border-radius: 50px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    @media (max-width: 768px) {
+      .showcase-grid { grid-template-columns: 1fr; gap: 36px; }
+      .showcase-grid.reverse { direction: ltr; }
+      .showcase-image { order: -1; }
+    }
+
+    /* ── PRIVACY BLOCK ── */
+    .privacy-section {
+      background: var(--bg2);
+      padding: 80px 24px;
+    }
+    .privacy-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    .privacy-text {}
+    .privacy-text h2 {
+      font-size: clamp(26px, 3.5vw, 40px);
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+    .privacy-text p { color: var(--muted); font-size: 15px; line-height: 1.75; margin-bottom: 28px; }
+    .privacy-checks { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .privacy-checks li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 15px;
+      color: var(--dim);
+    }
+    .privacy-checks li .ck {
+      width: 22px;
+      height: 22px;
+      background: rgba(27,224,132,0.15);
+      border: 1px solid rgba(27,224,132,0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--green);
+      flex-shrink: 0;
+    }
+    .privacy-graphic {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 36px 28px;
+      text-align: center;
+    }
+    .privacy-graphic .big-icon { font-size: 56px; margin-bottom: 16px; }
+    .privacy-graphic h3 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .privacy-graphic p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+    .btn-privacy-link {
+      display: inline-block;
+      margin-top: 24px;
+      background: rgba(27,224,132,0.1);
+      border: 1px solid rgba(27,224,132,0.25);
+      color: var(--green);
+      text-decoration: none;
+      padding: 10px 22px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn-privacy-link:hover { background: rgba(27,224,132,0.18); }
+    @media (max-width: 768px) {
+      .privacy-inner { grid-template-columns: 1fr; gap: 36px; }
+    }
+
+    /* ── SUPPORT ── */
+    .support { background: var(--bg); }
+    .support-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-bottom: 72px;
+    }
+    .support-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      text-align: center;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+    .support-card:hover {
+      border-color: rgba(27,224,132,0.3);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+      transform: translateY(-3px);
+    }
+    .support-card .s-icon { font-size: 36px; margin-bottom: 16px; }
+    .support-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+    .support-card p { color: var(--muted); font-size: 14px; margin-bottom: 20px; line-height: 1.6; }
+    .btn-action {
+      display: inline-block;
+      background: var(--green);
+      color: #000;
+      text-decoration: none;
+      padding: 10px 22px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 700;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-action:hover { background: var(--green-dark); transform: translateY(-1px); }
+
+    /* ── FAQ ── */
+    .faq-wrap { background: var(--bg2); }
+    .faq-list { max-width: 740px; margin: 0 auto; }
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      padding: 22px 0;
+    }
+    .faq-item:first-child { border-top: 1px solid var(--border); }
+    .faq-q {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .faq-q-badge {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      background: rgba(27,224,132,0.12);
+      border: 1px solid rgba(27,224,132,0.2);
+      color: var(--green);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+    .faq-a {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.75;
+      padding-left: 38px;
+    }
+    .faq-a a { color: var(--green); text-decoration: none; }
+    .faq-a a:hover { text-decoration: underline; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 56px 24px 40px;
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+    .footer-brand img {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      margin-bottom: 12px;
+    }
+    .footer-brand p { font-size: 14px; color: var(--muted); max-width: 240px; line-height: 1.6; }
+    .footer-links h4 {
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+    .footer-links ul { list-style: none; }
+    .footer-links ul li { margin-bottom: 10px; }
+    .footer-links ul li a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+    .footer-links ul li a:hover { color: var(--green); }
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.3);
+    }
+    .footer-bottom a { color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; }
+    .footer-bottom a:hover { color: var(--green); }
+
+    @media (max-width: 768px) {
+      section { padding: 64px 24px; }
+      .hero { padding: 72px 24px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <img src="images/appicon.png" alt="Unblocky icon" />
+        <span>Unblocky</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#support">Support</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+        <li><a href="#support" class="btn-nav">Get Help</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-inner">
+      <div class="hero-badge">💪 iOS 17+ · iPhone &amp; iPad</div>
+      <h1>Earn your<br><span class="accent">screen time.</span><br>One push-up <span class="accent-orange">at a time.</span></h1>
+      <p>Unblocky blocks your most distracting apps and makes you do push-ups to unlock them. Turn every craving into a rep.</p>
+      <div class="hero-cta">
+        <a href="#" class="btn-appstore">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          <span>
+            <span class="coming-soon-label">Coming Soon to</span>
+            <span class="main-label">the App Store</span>
+          </span>
+        </a>
+        <a href="#support" class="btn-support-link">Need help? ↓</a>
+      </div>
+
+      <!-- Real app screenshots -->
+      <div class="hero-phone-wrap">
+        <div class="hero-phone">
+          <img src="images/screen-blocker.png" alt="Challenge screen" />
+        </div>
+        <div class="hero-phone">
+          <img src="images/screen-home.png" alt="Home dashboard" />
+        </div>
+        <div class="hero-phone">
+          <img src="images/screen-pushup.png" alt="Push-up detection" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="section-inner">
+      <span class="section-label">What Unblocky does</span>
+      <h2 class="section-title">Your phone. Your rules.<br>Your reps.</h2>
+      <p class="section-sub">A smarter way to beat phone addiction — by turning screen cravings into strength gains.</p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon icon-orange">🚫</div>
+          <h3>App Blocking</h3>
+          <p>Use iOS Screen Time to block any app or category — social media, games, streaming, whatever distracts you most.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon icon-green">💪</div>
+          <h3>Push-up Challenges</h3>
+          <p>When you try to open a blocked app, Unblocky intercepts and asks you to do push-ups first. No reps, no access.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon icon-blue">👁️</div>
+          <h3>Vision Rep Counting</h3>
+          <p>Your camera detects and counts every push-up automatically using on-device AI. No wearables, no manual tapping.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon icon-green">⏱️</div>
+          <h3>Earn Screen Time</h3>
+          <p>Each rep earns you minutes. Complete your challenge and the app unlocks for your earned duration, then auto-relocks.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon icon-purple">🔥</div>
+          <h3>Streaks &amp; Stats</h3>
+          <p>Track daily push-up totals, weekly minutes earned, best streak, and total distractions blocked over time.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon icon-orange">⚙️</div>
+          <h3>Flexible Difficulty</h3>
+          <p>Choose Easy (3 reps → 5 min), Balanced (5 reps → 10 min), or Strong (10 reps → 15 min) — or set your own.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-it-works">
+    <div class="section-inner">
+      <span class="section-label">Getting started</span>
+      <h2 class="section-title">How it works</h2>
+      <p class="section-sub">Unblocky is dead simple. Set it up once, then let your body be the bouncer.</p>
+      <div class="steps steps-connector">
+        <div class="step">
+          <div class="step-number">1</div>
+          <h3>Pick Your Apps</h3>
+          <p>Select which apps or categories you want to block — social media, games, news, or any app that distracts you.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <h3>Apps Get Blocked</h3>
+          <p>Unblocky uses iOS Screen Time to put a shield on every selected app. They're locked until you earn access.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <h3>Do Your Push-ups</h3>
+          <p>Tap "Start Challenge," point your camera down, and do your reps. The app counts every rep automatically.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">4</div>
+          <h3>Unlock &amp; Enjoy</h3>
+          <p>Complete your reps, earn your minutes, and open the app. When time's up, it locks again automatically.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOWCASE -->
+  <section style="background: var(--bg2); padding: 96px 24px;">
+    <div class="section-inner">
+      <div class="showcase-grid">
+        <div class="showcase-text">
+          <span class="section-label">Dashboard</span>
+          <h2 class="section-title" style="font-size: clamp(24px,3vw,36px);">Your daily progress,<br>at a glance</h2>
+          <p style="color:var(--muted); font-size:16px; line-height:1.7; margin-bottom:20px;">Track push-up totals, earned minutes, streaks, and blocked apps all from one clean home screen. Start a Focus Session or block apps instantly with one tap.</p>
+          <div class="showcase-pills">
+            <span class="pill">Daily rep counter</span>
+            <span class="pill">🔥 Streak tracking</span>
+            <span class="pill">Quick actions</span>
+          </div>
+        </div>
+        <div class="showcase-image">
+          <img src="images/screen-home.png" alt="Unblocky home screen" style="max-height:500px; border-radius:32px; box-shadow:0 24px 64px rgba(0,0,0,0.5); border:1.5px solid rgba(255,255,255,0.08);" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background: var(--bg); padding: 96px 24px;">
+    <div class="section-inner">
+      <div class="showcase-grid reverse">
+        <div class="showcase-text">
+          <span class="section-label">Vision Detection</span>
+          <h2 class="section-title" style="font-size: clamp(24px,3vw,36px);">Real-time push-up<br>counting with AI</h2>
+          <p style="color:var(--muted); font-size:16px; line-height:1.7; margin-bottom:20px;">Point your camera, drop down, and start moving. Unblocky's Vision framework detects your body pose and counts every rep automatically — no wearables, no tapping.</p>
+          <div class="showcase-pills">
+            <span class="pill">On-device AI</span>
+            <span class="pill">Haptic feedback</span>
+            <span class="pill">No wearable needed</span>
+          </div>
+        </div>
+        <div class="showcase-image">
+          <img src="images/screen-pushup.png" alt="Push-up detection" style="max-height:500px; border-radius:32px; box-shadow:0 24px 64px rgba(0,0,0,0.5); border:1.5px solid rgba(255,255,255,0.08);" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background: var(--bg2); padding: 96px 24px;">
+    <div class="section-inner">
+      <div class="showcase-grid">
+        <div class="showcase-text">
+          <span class="section-label">Progress &amp; Stats</span>
+          <h2 class="section-title" style="font-size: clamp(24px,3vw,36px);">Watch your discipline<br>grow week by week</h2>
+          <p style="color:var(--muted); font-size:16px; line-height:1.7; margin-bottom:20px;">Bar charts, all-time totals, best streak, distractions blocked — your full fitness and focus history in one place. The more you resist, the better the numbers look.</p>
+          <div class="showcase-pills">
+            <span class="pill">Weekly bar chart</span>
+            <span class="pill">All-time stats</span>
+            <span class="pill">Achievements</span>
+          </div>
+        </div>
+        <div class="showcase-image">
+          <img src="images/screen-analytics.png" alt="Progress and analytics" style="max-height:500px; border-radius:32px; box-shadow:0 24px 64px rgba(0,0,0,0.5); border:1.5px solid rgba(255,255,255,0.08);" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIVACY -->
+  <section class="privacy-section" id="privacy">
+    <div class="section-inner">
+      <div class="privacy-inner">
+        <div class="privacy-text">
+          <span class="section-label">Privacy</span>
+          <h2>Everything happens<br>on your device.</h2>
+          <p>Unblocky never uploads your camera feed, your push-up data, or your Screen Time activity anywhere. Zero servers, zero tracking.</p>
+          <ul class="privacy-checks">
+            <li><span class="ck">✓</span> Camera processed entirely on-device — never saved or uploaded</li>
+            <li><span class="ck">✓</span> Screen Time control stays local via Apple's FamilyControls API</li>
+            <li><span class="ck">✓</span> No account or sign-in required</li>
+            <li><span class="ck">✓</span> No analytics, no ads, no tracking SDKs</li>
+            <li><span class="ck">✓</span> Delete the app → all data gone instantly</li>
+          </ul>
+          <a href="privacy.html" class="btn-privacy-link">Read full Privacy Policy →</a>
+        </div>
+        <div class="privacy-graphic">
+          <div class="big-icon">🔒</div>
+          <h3>Privacy by design</h3>
+          <p>Your push-up reps, blocked apps, and exercise stats are stored only on your iPhone or iPad. We have no servers and no access to any of it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUPPORT -->
+  <section class="support" id="support">
+    <div class="section-inner">
+      <span class="section-label">Support</span>
+      <h2 class="section-title">We're here to help</h2>
+      <p class="section-sub">Something not working right, or just have a question? Get in touch and we'll sort it out.</p>
+      <div class="support-grid">
+        <div class="support-card">
+          <div class="s-icon">✉️</div>
+          <h3>Email Support</h3>
+          <p>Send us a message and we'll get back to you within 24 hours.</p>
+          <a href="mailto:unblocky.support@gmail.com" class="btn-action">Send Email</a>
+        </div>
+        <div class="support-card">
+          <div class="s-icon">🐛</div>
+          <h3>Report a Bug</h3>
+          <p>Push-up detection off? App not blocking? Tell us and we'll fix it fast.</p>
+          <a href="mailto:unblocky.support@gmail.com?subject=Bug%20Report" class="btn-action">Report Bug</a>
+        </div>
+        <div class="support-card">
+          <div class="s-icon">💡</div>
+          <h3>Feature Request</h3>
+          <p>Have an idea — squats, pull-ups, different challenges? We want to hear it.</p>
+          <a href="mailto:unblocky.support@gmail.com?subject=Feature%20Request" class="btn-action">Share Idea</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq-wrap">
+    <div class="section-inner">
+      <div style="text-align:center; margin-bottom: 48px;">
+        <span class="section-label">FAQ</span>
+        <h2 class="section-title" style="margin-bottom:0;">Common questions</h2>
+      </div>
+      <div class="faq-list">
+
+        <div class="faq-item">
+          <div class="faq-q"><span class="faq-q-badge">Q</span>How does Unblocky actually block apps?</div>
+          <div class="faq-a">Unblocky uses Apple's official Screen Time / FamilyControls framework — the same system built into iOS parental controls. When you select an app to block, Unblocky applies a "shield" through Screen Time that intercepts every launch attempt. This requires you to grant Unblocky Screen Time authorization during onboarding.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q"><span class="faq-q-badge">Q</span>Why does Unblocky need camera access?</div>
+          <div class="faq-a">The camera is used solely to count your push-up reps in real time using Apple's Vision framework for pose detection. The camera feed is processed entirely on-device and is never saved, stored, or transmitted anywhere. You can revoke camera access in Settings → Privacy & Security → Camera at any time.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q"><span class="faq-q-badge">Q</span>Push-up detection isn't working — what should I do?</div>
+          <div class="faq-a">For best results: place your phone on the floor in front of you in landscape or portrait orientation, ensure there's good lighting, and start with your full body visible in frame. The camera needs a clear view of your upper body as you move up and down. If detection is still off, try adjusting the phone position or improve lighting conditions.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q"><span class="faq-q-badge">Q</span>Does Unblocky require an account?</div>
+          <div class="faq-a">No account, no sign-up, no email required. Download and start using Unblocky immediately. All your data — streaks, stats, settings — lives locally on your device.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q"><span class="faq-q-badge">Q</span>Why does Unblocky need Screen Time authorization?</div>
+          <div class="faq-a">Screen Time authorization (via Apple's FamilyControls framework) is what gives Unblocky the ability to block and unblock apps. Without it, iOS will not allow any third-party app to control Screen Time. This permission stays entirely on your device — Unblocky cannot access Screen Time remotely.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q"><span class="faq-q-badge">Q</span>Which apps can I block?</div>
+          <div class="faq-a">You can block any individual app installed on your device, or block entire categories (social networking, games, entertainment, etc.). You can also unblock or change your selection at any time from the Unblocky app.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q"><span class="faq-q-badge">Q</span>What happens after I earn my screen time?</div>
+          <div class="faq-a">Once you complete your push-up challenge, the blocked app unlocks for your earned duration (e.g., 10 minutes on Balanced mode). When that time expires, the app automatically re-locks. You'll need to do another push-up challenge to unlock it again.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q"><span class="faq-q-badge">Q</span>Can I change the difficulty or push-up requirement?</div>
+          <div class="faq-a">Yes. In Settings you can choose from Easy (3 reps → 5 min), Balanced (5 reps → 10 min), or Strong (10 reps → 15 min) presets, or configure a custom reps-to-minutes ratio. You can also set a maximum unlock cap.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q"><span class="faq-q-badge">Q</span>Does Unblocky collect any personal data?</div>
+          <div class="faq-a">No. Unblocky does not collect, store, or transmit any personal information. No analytics, no crash reporting to external servers, no ads. All data stays on your device. See our <a href="privacy.html">Privacy Policy</a> for full details.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q"><span class="faq-q-badge">Q</span>How do I completely reset Unblocky?</div>
+          <div class="faq-a">In Settings → Clear Data you can reset all stats and preferences. To remove all data entirely, delete the app from your device. Note: you may also need to manually remove Unblocky's Screen Time permissions in iOS Settings → Screen Time.</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="images/appicon.png" alt="Unblocky" />
+        <p>Turn screen cravings into push-up reps. Block apps, build discipline, earn your screen time.</p>
+      </div>
+      <div class="footer-links">
+        <h4>App</h4>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#support">Support</a></li>
+          <li><a href="mailto:unblocky.support@gmail.com">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Unblocky. All rights reserved.</span>
+      <a href="privacy.html">Privacy Policy</a>
+    </div>
+  </footer>
+
+</body>
+</html>
